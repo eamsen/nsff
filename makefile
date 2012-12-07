@@ -1,18 +1,14 @@
-# Copyright 2012: Eugen Sawin <esawin@me73.com>
 SRCDIR:=src
 TSTDIR:=src/test
 BINDIR:=bin
 OBJDIR:=bin/obj
 GTESTLIBS:=-lgtest -lgtest_main
-GFLAGSDIR:=deps/gflags-2.0
 CXX:=g++ -std=c++0x
-# CXX:=g++ -std=c++0x -I$(GFLAGSDIR)/src
 CFLAGS:=-Wall -O3
-LIBS:=-lgflags -lpthread -lrt
-# LIBS:=$(GFLAGSDIR)/.libs/libgflags.a -lpthread -lrt
+LIBS:=-lpthread -lrt
 TSTFLAGS:=
 TSTLIBS:=$(GTESTLIBS) -lpthread -lrt
-BINS:=ace
+BINS:=nsff
 
 TSTBINS:=$(notdir $(basename $(wildcard $(TSTDIR)/*.cc)))
 TSTOBJS:=$(addsuffix .o, $(notdir $(basename $(wildcard $(TSTDIR)/*.cc))))
@@ -35,28 +31,10 @@ opt: clean compile
 debug: CFLAGS=-O0 -g
 debug: compile
 
-BENCHMARKS:=normal
-ARGS:=-consistency=ac3
-LOG:=perf-results.txt
-perftest: opt
-	@mkdir -p log; rm -f log/$(LOG);
-	@echo "test parameters: BENCHMARKS=$(BENCHMARKS) ARGS=$(ARGS) LOG=$(LOG)";
-	@for i in benchmarks/$(BENCHMARKS)/*.xml;\
-		do echo "testing $$i";\
-		./bin/ace $$i $(ARGS) >> log/$(LOG);\
-		echo " " >> log/$(LOG);\
-	done
-	@echo "tested all (results in log/$(LOG))";
-
-depend: gflags cpplint
+depend: cpplint
 
 makedirs:
 	@mkdir -p bin/obj
-
-gflags:
-	@tar xf deps/gflags-2.0.tar.gz -C deps/;
-	@cd deps/gflags-2.0/; ./configure; make;
-	@echo "compiled gflags"
 
 cpplint: 
 	@if [ -f tools/cpplint/cpplint.py ];\
@@ -85,7 +63,7 @@ clean:
 	@echo "cleaned"
 
 .PRECIOUS: $(OBJS) $(TSTOBJS)
-.PHONY: compile profile opt perftest depend makedirs gflags check cpplint\
+.PHONY: compile profile opt depend makedirs check cpplint\
 	checkstyle clean
 
 $(BINDIR)/%: $(OBJS) $(SRCDIR)/%.cc
