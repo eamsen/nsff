@@ -1,3 +1,5 @@
+#ifndef S_H
+#define S_H
 #include "g.h"
 // Action
 struct A{
@@ -102,7 +104,7 @@ struct S{
       for(u x=0;x<n_;++x)
         if(T(x,y)==nt_)return{x,y};
     // Next target card is the free card.
-    return{0,0};
+    return{x_,y_};
   }
   // Returns the field value reference for given position.
   u& F(u x,u y){return F(x+y*n_);}
@@ -151,7 +153,7 @@ vu Rot(u id){
   u c=id&0xf;
   if(c<2)return{t,t|1u};
   else if(c<6)return{t|2u,t|3u,t|4u,t|5u};
-  else if(c==6)return{t|6u};
+  else if(c==6)return{id};
   return{t|7u,t|8u,t|9u,t|10u};
 }
 // Returns all states resulting in inserting at given row and column.
@@ -229,11 +231,13 @@ S Se(S& st){
     q.pop();
     if(t.Sol())return t;
     for(S& s:E1(t))
-      for(uuu& p:E2(s,30)){
-        s.M(p.second.first,p.second.second);
-        s.h_=p.first;
-        q.push(s);
+      for(uuu& p:E2(s,5)){
+        S s2=s;
+        s2.M(p.second.first,p.second.second);
+        s2.h_=p.first;
+        q.push(s2);
       }
   }
   return st;
 }
+#endif  // S_H

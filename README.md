@@ -1,84 +1,32 @@
-#   
+# NSFF - Not So Fast Farward
 by Eugen Sawin <esawin@me73.com>
 
 ## Version
-This is the Hackolaus version, hacked for the programming contest at the
-University of Freiburg, Germany.
+This is the winning version of the Hackolaus, a 24h programming contest at the
+University of Freiburg, Germany.  
 
+### Remarks
+Please do **not** learn from this code. The competition ranked, besides
+execution performance and correctness, also (uncommented) code size in number of
+bytes. So one goal was to provide very dense code. I can proudly say, this is
+the worst code I have written.
+ 
 ## Requirements
-* POSIX.1b-compliant operating system (librt)
 * GNU GCC 4.6+
 * GNU Make
-* Python 2.7+ (only for style checking)
 
 ## Dependencies
-### Required
-* gflags (http://code.google.com/p/gflags or `$ make gflags`)
+None.
 
-### Optional
-* gtest (http://code.google.com/p/googletest, only for testing)
-* gperftools (http://code.google.com/p/gperftools, only for profiling)
-* cpplint (`$ make cpplint`, only for style checking)
-
-## Building gflags
-The repository contains a slightly modified gflags version with less verbose
-help output.  
-If you want to use the provided version instead, you need to build gflags
-locally:
-
-    $ make gflags
-
-and then activate the two lines in the makefile, which are commented out.
-Alternatively you can build all dependencies at once:
-
-    $ make depend
-
-## Building Ace (depends on gflags)
-To build Ace use:
+## Building NSFF
+To build NSFF use:
 
     $ make
 
-For performance measuring use the more optimised version:
+## Using NSFF
+To start nsff use:
 
-    $ make opt
-
-## Using Ace
-To start ace use:
-
-    $ ace xcsp-input.xml
-
-To show the full usage and flags help use:
-
-    $ ace -help
-
-## Running Ace performance tests
-To run performance tests on some benchmark problems use:
-
-    $ make perftest
-
-All test parameters can be changed on invocation like this:
-
-    $ make perftest ARGS="-consistency=ac2001 -verbose"
-
-## Testing Ace (depends on gtest)
-To build and run the unit tests use:
-
-    $ make check
-
-## Profiling Ace (depends on gperftools)
-To build Ace with profiling turned on use:
-
-    $ make profile
-
-## Getting cpplint
-Code style checking depends on a modified version of Google's cpplint. Get it via
-  
-    $ make cpplint
-
-## Checking style (depends on cpplint)
-To test code style conformance with the [Google C++ Style Guide](http://google-styleguide.googlecode.com/svn/trunk/cppguide.xml) use:
-
-    $ make checkstyle
+    $ ./nsff < input.txt
 
 ## License
-The MIT License
+The MIT License.

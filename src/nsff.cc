@@ -17,8 +17,6 @@ int main(){
     ss(e)>>c>>t;
     st.b_.push_back(++t<<4|c);
   });
-  // co<<st.Str()<<endl;
   S f=Se(st);
-  // co<<f.Str()<<endl;
   co<<f.AStr();
 }
