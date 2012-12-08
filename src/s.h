@@ -38,12 +38,6 @@ struct S{
            h_(o.h_),b_(move(o.b_)),a_(move(o.a_)){}
   S(const S& o):n_(o.n_),fc_(o.fc_),t_(o.t_),nt_(o.nt_),x_(o.x_),y_(o.y_),
                 c_(o.c_),h_(o.h_),b_(o.b_),a_(o.a_){}
-  // Inserts free card in given column pushing up.
-  void CU(u x){
-    ++c_;
-    a_.push_back(A(1,x,fc_,x_,y_));
-    for(u y=0;y<n_;++y)swap(fc_,F(x,y));
-  }
   // Moves the player position.
   void M(u x,u y){
     assert(x<n_&&y<n_);
@@ -55,26 +49,34 @@ struct S{
     if(T(x,y)==nt_)++nt_;
   }
   // Returns whether the game is solved.
-  bool Sol(){
-    return nt_>t_;
+  bool Sol(){return nt_>t_;}
+  // Inserts free card in given column pushing up.
+  void CU(u x){
+    ++c_;
+    a_.push_back(A(1,x,fc_,x_,y_));
+    for(u y=0;y<n_;++y)swap(fc_,F(x,y));
+    if(x==x_&&++y_==n_)y_=0;
   }
   // Inserts free card in given column pushing down.
   void CD(u x){
     ++c_;
     a_.push_back(A(0,x,fc_,x_,y_));
     for(i y=n_-1;y>=0;--y)swap(fc_,F(x,y));
+    if(x==x_&&--y_>n_)y_=n_-1;
   }
   // Inserts free card in given row pushing right.
   void RR(u y){
     ++c_;
     a_.push_back(A(2,y,fc_,x_,y_));
     for(u x=0;x<n_;++x)swap(fc_,F(x,y));
+    if(y==y_&&++x_==n_)x_=0;
   }
   // Inserts free card in given row pushing left.
   void RL(u y){
     ++c_;
     a_.push_back(A(3,y,fc_,x_,y_));
     for(i x=n_-1;x>=0;--x)swap(fc_,F(x,y));
+    if(y==y_&&--x_>n_)x_=n_-1;
   }
   // Returns all reachable positions from the given postion.
   vuu Con(u x,u y){
@@ -109,14 +111,15 @@ struct S{
   }
   bool operator<(const S& r)const{
     // Yeah, I know, but this saves characters.
-    return c_+h_>r.c_+r.h_;
+    return i(c_+h_)-i(nt_)>i(r.c_+r.h_)-i(r.nt_);
   }
   // Returns the next target's position.
   uu NTP(){
     for(u y=0;y<n_;++y)
       for(u x=0;x<n_;++x)
-        if(T(x,y)==nt_)return {x,y};
-    assert(false);
+        if(T(x,y)==nt_)return{x,y};
+    // Next target card is the free card.
+    return{0,0};
   }
   // Returns the field value reference for given position.
   u& F(u x,u y){return F(x+y*n_);}
@@ -136,7 +139,8 @@ struct S{
   // Returns the string representation of the state.
   s Str(){
     ss s;
-    s<<"n: "<<n_<<"\ntargets: "<<t_<<"\nnext target: "<<nt_<<"\ncard: "<<fc_
+    s<<"n: "<<n_<<"\ntargets: "<<t_<<"\nnext target: "<<nt_
+     <<"\ncard: "<<(fc_&0xf)<<"("<<(fc_>>4)<<")"
      <<"\npos: "<<x_<<","<<y_<<"\ncost: "<<c_<<"\n";
     for(i y=n_-1;y>=0;--y){
       for(u x=0;x<n_;++x)
@@ -161,10 +165,12 @@ struct S{
 };
 // Returns all rotated card ids for given card id.
 vu Rot(u id){
-  if(id<2)return{0,1};
-  else if(id<6)return{2,3,4,5};
-  else if(id==6)return{6};
-  return{7,8,9,10};
+  u t=id&0xfffffff0;
+  u c=id&0xf;
+  if(c<2)return{t,t|1u};
+  else if(c<6)return{t|2u,t|3u,t|4u,t|5u};
+  else if(c==6)return{t|6u};
+  return{t|7u,t|8u,t|9u,t|10u};
 }
 // Returns all states resulting in inserting at given row and column.
 vS In(S& st,u n){
@@ -229,21 +235,24 @@ vuuu Explore(S& st,u n){
   }
   return v;
 }
+// Searches for a solution for given state/game by a hill-climbing/A* hybrid.
+// Returns the solution state, or the start state, if no solution was found.
 S Search(S& st){
+  if(st.T(st.x_,st.y_)==1)++st.nt_;
   qS q;
   st.h_=MD({st.x_,st.y_},st.NTP());
   q.push(st);
   while(q.size()){
     S t=q.top();
     q.pop();
-    co<<"\n"<<t.nt_;
-    co<<" t("<<t.x_<<","<<t.y_<<")\n";
+    // co<<"\n"<<t.nt_;
+    //co<<" t("<<t.x_<<","<<t.y_<<")\n";
     if(t.Sol())return t;
     for(S& s:Expand(t)){
       for(uuu& p:Explore(s,10)){
         s.M(p.second.first,p.second.second);
         s.h_=p.first;
-        co<<" p("<<p.second.first<<","<<p.second.second<<")";
+        //co<<" p("<<p.second.first<<","<<p.second.second<<")";
         q.push(s);
       }
     }

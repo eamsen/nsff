@@ -24,6 +24,7 @@ int main(){
   //  for(uu xy:Explore(st,10)){
   //    co<<xy.first<<","<<xy.second<<" ";
   //  }
+  // return 0;
   S f=Search(st);
   co<<f.Str()<<endl;
   co<<f.AStr()<<endl;
