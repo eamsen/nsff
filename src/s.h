@@ -1,21 +1,4 @@
 #include "g.h"
-u ASCII(u c){
-  return c;
-  switch(c){
-    case 0:return 196;
-    case 1:return 179;
-    case 2:return 218;
-    case 3:return 191;
-    case 4:return 217;
-    case 5:return 192;
-    case 6:return 197;
-    case 7:return 193;
-    case 8:return 194;
-    case 9:return 180;
-    case 10:return 195;
-    default:assert(false);
-  }
-}
 // Action
 struct A{
   A(u t,u p,u c,u x,u y):v_(t|(p<<3)),c_(c),x_(x),y_(y){}
@@ -143,8 +126,7 @@ struct S{
      <<"\ncard: "<<(fc_&0xf)<<"("<<(fc_>>4)<<")"
      <<"\npos: "<<x_<<","<<y_<<"\ncost: "<<c_<<"\n";
     for(i y=n_-1;y>=0;--y){
-      for(u x=0;x<n_;++x)
-        s<<ASCII(C(x,y))<<"("<<T(x,y)<<")\t";
+      for(u x=0;x<n_;++x)s<<C(x,y)<<"("<<T(x,y)<<")\t";
       s<<"\n";
     }
     return s.str();
@@ -247,7 +229,7 @@ S Se(S& st){
     q.pop();
     if(t.Sol())return t;
     for(S& s:E1(t))
-      for(uuu& p:E2(s,100)){
+      for(uuu& p:E2(s,30)){
         s.M(p.second.first,p.second.second);
         s.h_=p.first;
         q.push(s);
