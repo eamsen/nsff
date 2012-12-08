@@ -21,9 +21,10 @@ int main(){
   // for (S& st2:Expand(st)){
   //   co<<st2.Str()<<st2.AStr()<<endl;
   // }
-  // co<<Search(st).Str()<<endl;
-  for(uu xy:Explore(st)){
-    co<<xy.first<<","<<xy.second<<" ";
-  }
-  co<<endl;
+  //  for(uu xy:Explore(st,10)){
+  //    co<<xy.first<<","<<xy.second<<" ";
+  //  }
+  S f=Search(st);
+  co<<f.Str()<<endl;
+  co<<f.AStr()<<endl;
 }

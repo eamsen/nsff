@@ -33,13 +33,30 @@ struct A{
 };
 // State
 struct S{
-  S():n_(0),fc_(0),t_(0),nt_(1),x_(0),y_(0),c_(0){}
-  S(u n,u t,u nt,u fc,u x,u y):n_(n),fc_(fc),t_(t),nt_(nt),x_(x),y_(y){}
+  S():n_(0),fc_(0),t_(0),nt_(1),x_(0),y_(0),c_(0),h_(0){}
+  S(S&& o):n_(o.n_),fc_(o.fc_),t_(o.t_),nt_(o.nt_),x_(o.x_),y_(o.y_),c_(o.c_),
+           h_(o.h_),b_(move(o.b_)),a_(move(o.a_)){}
+  S(const S& o):n_(o.n_),fc_(o.fc_),t_(o.t_),nt_(o.nt_),x_(o.x_),y_(o.y_),
+                c_(o.c_),h_(o.h_),b_(o.b_),a_(o.a_){}
   // Inserts free card in given column pushing up.
   void CU(u x){
     ++c_;
     a_.push_back(A(1,x,fc_,x_,y_));
     for(u y=0;y<n_;++y)swap(fc_,F(x,y));
+  }
+  // Moves the player position.
+  void M(u x,u y){
+    assert(x<n_&&y<n_);
+    assert(a_.size());
+    x_=x;
+    y_=y;
+    a_.back().x_=x;
+    a_.back().y_=y;
+    if(T(x,y)==nt_)++nt_;
+  }
+  // Returns whether the game is solved.
+  bool Sol(){
+    return nt_>t_;
   }
   // Inserts free card in given column pushing down.
   void CD(u x){
@@ -91,7 +108,8 @@ struct S{
     return v;
   }
   bool operator<(const S& r)const{
-    return c_<r.c_;
+    // Yeah, I know, but this saves characters.
+    return c_+h_>r.c_+r.h_;
   }
   // Returns the next target's position.
   uu NTP(){
@@ -118,8 +136,8 @@ struct S{
   // Returns the string representation of the state.
   s Str(){
     ss s;
-    s<<"n: "<<n_<<"\ntargets: "<<t_<<"\ncard: "<<fc_<<"\npos: "<<x_<<","<<y_
-     <<"\ncost: "<<c_<<"\n";
+    s<<"n: "<<n_<<"\ntargets: "<<t_<<"\nnext target: "<<nt_<<"\ncard: "<<fc_
+     <<"\npos: "<<x_<<","<<y_<<"\ncost: "<<c_<<"\n";
     for(i y=n_-1;y>=0;--y){
       for(u x=0;x<n_;++x)
         s<<ASCII(C(x,y))<<"("<<T(x,y)<<")\t";
@@ -134,8 +152,8 @@ struct S{
     return s.str();
   }
   // Board dimension, free card, number of targets, next target id,
-  // x and y positions, costs.
-  u n_,fc_,t_,nt_,x_,y_,c_;
+  // x and y positions, costs, heuristic costs.
+  u n_,fc_,t_,nt_,x_,y_,c_,h_;
   // The board fields.
   vu b_;
   // The recorded actions.
@@ -180,37 +198,54 @@ vS Expand(S& st){
   assert(v.size()<=8*(st.n_-1));
   return v;
 }
-u MD(i x1,i y1,i x2,i y2){
-  return abs(x1-x2)+abs(y1-y2);
-}
-// Returns all reachable positions for given state.
-vuu Explore(S& st){
+// Returns the manhattan distance for the given positions.
+u MD(i x1,i y1,i x2,i y2){return abs(x1-x2)+abs(y1-y2);}
+u MD(uu p1,uu p2){return MD(p1.first,p1.second,p2.first,p2.second);}
+// Returns at most the given number of reachable positions for given state.
+// Results are pair(f-cost,pair(x,y)).
+vuuu Explore(S& st,u n){
+  uu p=st.NTP();
   vuu s={{st.x_,st.y_}};
-  suu r;
-  r.insert(s.back());
+  suuu r;
+  r.insert({MD({st.x_,st.y_},p),{st.x_,st.y_}});
   while(s.size()){
     u x=s.back().first;
     u y=s.back().second;
     s.pop_back();
     for(uu xy:st.Con(x,y)){
-      if(!r.count(xy)){
-        r.insert(xy);
+      u d=MD(p,xy);
+      if(!r.count({d,xy})){
+        r.insert({d,xy});
         s.push_back(xy);
       }
     }
   }
-  return vuu(r.begin(), r.end());
+  r.erase({MD({st.x_,st.y_},p),{st.x_,st.y_}});
+  vuuu v;
+  v.reserve(n);
+  for(auto& e:r){
+    v.push_back(e);
+    if(v.size()==n)break;
+  }
+  return v;
 }
-  
 S Search(S& st){
   qS q;
+  st.h_=MD({st.x_,st.y_},st.NTP());
   q.push(st);
   while(q.size()){
     S t=q.top();
     q.pop();
-    if(!t.t_)return t;
+    co<<"\n"<<t.nt_;
+    co<<" t("<<t.x_<<","<<t.y_<<")\n";
+    if(t.Sol())return t;
     for(S& s:Expand(t)){
-      q.push(s);
+      for(uuu& p:Explore(s,10)){
+        s.M(p.second.first,p.second.second);
+        s.h_=p.first;
+        co<<" p("<<p.second.first<<","<<p.second.second<<")";
+        q.push(s);
+      }
     }
   }
   return st;

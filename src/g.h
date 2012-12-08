@@ -23,9 +23,12 @@ struct A;
 typedef vector<A> vA;
 typedef stringstream ss;
 typedef pair<u,u> uu;
+typedef pair<u,pair<u,u> > uuu;
 typedef vector<uu> vuu;
+typedef vector<uuu> vuuu;
 typedef unordered_set<u> su;
 typedef set<uu> suu;
+typedef set<uuu> suuu;
 ostream& co=cout;
 istream& ci=cin;
 #include "s.h"
