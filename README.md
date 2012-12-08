@@ -2,7 +2,7 @@
 by Eugen Sawin <esawin@me73.com>
 
 ## Version
-This is the winning version of the Hackolaus, a 24h programming contest at the
+This is the winning version for the Hackolaus, a 24h programming contest at the
 University of Freiburg, Germany.  
 
 ### Remarks
