@@ -53,28 +53,28 @@ struct S{
   // Inserts free card in given column pushing up.
   void CU(u x){
     ++c_;
-    a_.push_back(A(1,x,fc_,x_,y_));
+    a_.push_back(A(1,x,fc_&0xf,x_,y_));
     for(u y=0;y<n_;++y)swap(fc_,F(x,y));
     if(x==x_&&++y_==n_)y_=0;
   }
   // Inserts free card in given column pushing down.
   void CD(u x){
     ++c_;
-    a_.push_back(A(0,x,fc_,x_,y_));
+    a_.push_back(A(0,x,fc_&0xf,x_,y_));
     for(i y=n_-1;y>=0;--y)swap(fc_,F(x,y));
     if(x==x_&&--y_>n_)y_=n_-1;
   }
   // Inserts free card in given row pushing right.
   void RR(u y){
     ++c_;
-    a_.push_back(A(2,y,fc_,x_,y_));
+    a_.push_back(A(2,y,fc_&0xf,x_,y_));
     for(u x=0;x<n_;++x)swap(fc_,F(x,y));
     if(y==y_&&++x_==n_)x_=0;
   }
   // Inserts free card in given row pushing left.
   void RL(u y){
     ++c_;
-    a_.push_back(A(3,y,fc_,x_,y_));
+    a_.push_back(A(3,y,fc_&0xf,x_,y_));
     for(i x=n_-1;x>=0;--x)swap(fc_,F(x,y));
     if(y==y_&&--x_>n_)x_=n_-1;
   }
@@ -195,7 +195,7 @@ vS In(S& st,u n){
   return v;
 }
 // Returns all states created by inserting the free card at any sane location.
-vS Expand(S& st){
+vS E1(S& st){
   vS v;
   v.reserve(8*(st.n_-1));
   for(u n=1;n<st.n_;n+=2)
@@ -209,7 +209,7 @@ u MD(i x1,i y1,i x2,i y2){return abs(x1-x2)+abs(y1-y2);}
 u MD(uu p1,uu p2){return MD(p1.first,p1.second,p2.first,p2.second);}
 // Returns at most the given number of reachable positions for given state.
 // Results are pair(f-cost,pair(x,y)).
-vuuu Explore(S& st,u n){
+vuuu E2(S& st,u n){
   uu p=st.NTP();
   vuu s={{st.x_,st.y_}};
   suuu r;
@@ -237,7 +237,7 @@ vuuu Explore(S& st,u n){
 }
 // Searches for a solution for given state/game by a hill-climbing/A* hybrid.
 // Returns the solution state, or the start state, if no solution was found.
-S Search(S& st){
+S Se(S& st){
   if(st.T(st.x_,st.y_)==1)++st.nt_;
   qS q;
   st.h_=MD({st.x_,st.y_},st.NTP());
@@ -245,17 +245,13 @@ S Search(S& st){
   while(q.size()){
     S t=q.top();
     q.pop();
-    // co<<"\n"<<t.nt_;
-    //co<<" t("<<t.x_<<","<<t.y_<<")\n";
     if(t.Sol())return t;
-    for(S& s:Expand(t)){
-      for(uuu& p:Explore(s,10)){
+    for(S& s:E1(t))
+      for(uuu& p:E2(s,100)){
         s.M(p.second.first,p.second.second);
         s.h_=p.first;
-        //co<<" p("<<p.second.first<<","<<p.second.second<<")";
         q.push(s);
       }
-    }
   }
   return st;
 }

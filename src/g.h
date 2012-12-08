@@ -3,7 +3,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <unordered_set>
 #include <set>
 #include <sstream>
 #include <algorithm>
@@ -26,8 +25,6 @@ typedef pair<u,u> uu;
 typedef pair<u,pair<u,u> > uuu;
 typedef vector<uu> vuu;
 typedef vector<uuu> vuuu;
-typedef unordered_set<u> su;
-typedef set<uu> suu;
 typedef set<uuu> suuu;
 ostream& co=cout;
 istream& ci=cin;
