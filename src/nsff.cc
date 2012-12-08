@@ -3,23 +3,27 @@ int main(){
   vs in(1);
   getline(ci,in[0]);
   S st;
-  ss(in[0])>>st.n;
-  u t=st.n*st.n+3;
+  ss(in[0])>>st.n_;
+  u t=st.n_*st.n_+3;
   in.resize(t+1);
   while(t){
     getline(ci,in[in.size()-t--]);
   }
-  ss(in[1])>>st.t;
-  ss(in[2])>>st.fc;
-  ss(in[3])>>st.x>>st.y;
+  ss(in[1])>>st.t_;
+  ss(in[2])>>st.fc_;
+  ss(in[3])>>st.x_>>st.y_;
   for_each(in.begin()+4,in.end(),[&st](s& e){
     u c,t;
     ss(e)>>c>>t;
-    st.b.push_back(++t<<4|c);
+    st.b_.push_back(++t<<4|c);
   });
   co<<st.Str()<<endl;
-  for (S& st2:Expand(st)){
-    co<<st2.Str()<<st2.AStr()<<endl;
+  // for (S& st2:Expand(st)){
+  //   co<<st2.Str()<<st2.AStr()<<endl;
+  // }
+  // co<<Search(st).Str()<<endl;
+  for(uu xy:Explore(st)){
+    co<<xy.first<<","<<xy.second<<" ";
   }
   co<<endl;
 }
