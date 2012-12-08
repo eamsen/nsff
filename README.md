@@ -9,7 +9,7 @@ University of Freiburg, Germany.
 Please do **not** learn from this code. The competition ranked, besides
 performance and correctness, also (uncommented) code size in number of bytes.
 So one goal was to provide very dense code. I can proudly say, this is
-the worst code I have written.
+the *worst code* I have written.
  
 ## Requirements
 * GNU GCC 4.6+
