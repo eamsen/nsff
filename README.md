@@ -1,4 +1,4 @@
-# NSFF - Not So Fast Farward
+# NSFF - Not So Fast Forward
 by Eugen Sawin <esawin@me73.com>
 
 ## Version
