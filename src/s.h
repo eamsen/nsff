@@ -3,241 +3,229 @@
 #include "g.h"
 // Action
 struct A{
-  A(u t,u p,u c,u x,u y):v_(t|(p<<3)),c_(c),x_(x),y_(y){}
+  A(u t,u p,u c,u x,u y):v(t|(p<<3)),c(c),x(x),y(y){}
   // Returns the action type. 0:CD, 1:CU, 2:RR, 3:RL
-  u T(){return v_&3u;} 
+  u T(){r v&3u;} 
   // Returns the position (row/column) of the action.
-  i P(){return v_>>3;}
+  i P(){r v>>3;}
   // Returns the string representation in output format.
-  s Str(){
+  s B(){
     ss s;
-    s<<c_<<" "<<(T()/2?"r ":"c ")<<(P()+1)*(T()%2?-1:1)<<" "<<x_<<" "<<y_;
-    return s.str();
+    s<<c<<" "<<(T()/2?"r ":"c ")<<(P()+1)*(T()%2?-1:1)<<" "<<x<<" "<<y;
+    r s.str();
   }
-  u v_,c_,x_,y_;
+  u v,c,x,y;
 };
 // State
 struct S{
-  S():n_(0),fc_(0),t_(0),nt_(1),x_(0),y_(0),c_(0),h_(0){}
-  S(S&& o):n_(o.n_),fc_(o.fc_),t_(o.t_),nt_(o.nt_),x_(o.x_),y_(o.y_),c_(o.c_),
-           h_(o.h_),b_(move(o.b_)),a_(move(o.a_)){}
-  S(const S& o):n_(o.n_),fc_(o.fc_),t_(o.t_),nt_(o.nt_),x_(o.x_),y_(o.y_),
-                c_(o.c_),h_(o.h_),b_(o.b_),a_(o.a_){}
+  S():n(0),fc(0),t(0),nt(1),x(0),y(0),c(0),h(0){}
+  S(S&& o):n(o.n),fc(o.fc),t(o.t),nt(o.nt),x(o.x),y(o.y),c(o.c),
+           h(o.h),b(move(o.b)),a(move(o.a)){}
+  S(const S& o):n(o.n),fc(o.fc),t(o.t),nt(o.nt),x(o.x),y(o.y),
+                c(o.c),h(o.h),b(o.b),a(o.a){}
   // Moves the player position.
-  void M(u x,u y){
-    assert(x<n_&&y<n_);
-    assert(a_.size());
-    x_=x;
-    y_=y;
-    a_.back().x_=x;
-    a_.back().y_=y;
-    if(T(x,y)==nt_)++nt_;
+  void M(u o,u k){
+    assert(o<n&&k<n);
+    assert(a.size());
+    x=o;
+    y=k;
+    a.back().x=o;
+    a.back().y=k;
+    if(T(o,k)==nt)++nt;
   }
   // Returns whether the game is solved.
-  bool Sol(){return nt_>t_;}
+  i O(){r nt>t;}
   // Inserts free card in given column pushing up.
-  void CU(u x){
-    ++c_;
-    a_.push_back(A(1,x,fc_&0xf,x_,y_));
-    for(u y=0;y<n_;++y)swap(fc_,F(x,y));
-    if(x==x_&&++y_==n_)y_=0;
+  void CU(u o){
+    ++c;
+    a.push_back(A(1,o,fc&0xf,x,y));
+    for(u k=0;k<n;++k)swap(fc,F(o,k));
+    if(o==x&&++y==n)y=0;
   }
   // Inserts free card in given column pushing down.
-  void CD(u x){
-    ++c_;
-    a_.push_back(A(0,x,fc_&0xf,x_,y_));
-    for(i y=n_-1;y>=0;--y)swap(fc_,F(x,y));
-    if(x==x_&&--y_>n_)y_=n_-1;
+  void CD(u o){
+    ++c;
+    a.push_back(A(0,o,fc&0xf,x,y));
+    for(i k=n-1;k>=0;--k)swap(fc,F(o,k));
+    if(o==x&&--y>n)y=n-1;
   }
   // Inserts free card in given row pushing right.
-  void RR(u y){
-    ++c_;
-    a_.push_back(A(2,y,fc_&0xf,x_,y_));
-    for(u x=0;x<n_;++x)swap(fc_,F(x,y));
-    if(y==y_&&++x_==n_)x_=0;
+  void RR(u k){
+    ++c;
+    a.push_back(A(2,k,fc&0xf,x,y));
+    for(u o=0;o<n;++o)swap(fc,F(o,k));
+    if(k==y&&++x==n)x=0;
   }
   // Inserts free card in given row pushing left.
-  void RL(u y){
-    ++c_;
-    a_.push_back(A(3,y,fc_&0xf,x_,y_));
-    for(i x=n_-1;x>=0;--x)swap(fc_,F(x,y));
-    if(y==y_&&--x_>n_)x_=n_-1;
+  void RL(u k){
+    ++c;
+    a.push_back(A(3,k,fc&0xf,x,y));
+    for(i o=n-1;o>=0;--o)swap(fc,F(o,k));
+    if(k==y&&--x>n)x=n-1;
   }
   // Returns all reachable positions from the given postion.
-  vuu Con(u x,u y){
-    assert(x<n_&&y<n_);
+  vuu Con(u o,u k){
+    assert(o<n&&k<n);
     vuu v;
-    u c=C(x,y);
-    if(x>0&&c!=1&&c!=2&&c!=5&&c!=10){
+    u c=C(o,k);
+    if(o>0&&c!=1&&c!=2&&c!=5&&c!=10){
       // Left.
-      u l=C(x-1,y);
+      u l=C(o-1,k);
       if(l!=1&&l!=3&&l!=4&&l!=9)
-        v.push_back({x-1,y});
+        v.push_back({o-1,k});
     }
-    if(x+1<n_&&c!=1&&c!=3&&c!=4&&c!=9){
+    if(o+1<n&&c!=1&&c!=3&&c!=4&&c!=9){
       // Right.
-      u r=C(x+1,y);
-      if(r!=1&&r!=2&&r!=5&&r!=10)
-        v.push_back({x+1,y});
+      u b=C(o+1,k);
+      if(b!=1&&b!=2&&b!=5&&b!=10)
+        v.push_back({o+1,k});
     }
-    if(y>0&&c!=0&&c!=4&&c!=5&&c!=7){
+    if(k>0&&c!=0&&c!=4&&c!=5&&c!=7){
       // Down.
-      u d=C(x,y-1);
+      u d=C(o,k-1);
       if(d!=0&&d!=2&&d!=3&&d!=8)
-        v.push_back({x,y-1});
+        v.push_back({o,k-1});
     }
-    if(y+1<n_&&c!=0&&c!=2&&c!=3&&c!=8){
+    if(k+1<n&&c!=0&&c!=2&&c!=3&&c!=8){
       // Up.
-      u u=C(x,y+1);
+      u u=C(o,k+1);
       if(u!=0&&u!=4&&u!=5&&u!=7)
-        v.push_back({x,y+1});
+        v.push_back({o,k+1});
     }
-    return v;
+    r v;
   }
-  bool operator<(const S& r)const{
+  i operator<(const S& g)const{
     // Yeah, I know, but this saves characters.
-    return i(c_+h_)-i(nt_)>i(r.c_+r.h_)-i(r.nt_);
+    r i(c+h)-i(nt)>i(g.c+g.h)-i(g.nt);
   }
   // Returns the next target's position.
   uu NTP(){
-    for(u y=0;y<n_;++y)
-      for(u x=0;x<n_;++x)
-        if(T(x,y)==nt_)return{x,y};
+    for(u k=0;k<n;++k)
+      for(u o=0;o<n;++o)
+        if(T(o,k)==nt)r{o,k};
     // Next target card is the free card.
-    return{x_,y_};
+    r{x,y};
   }
   // Returns the field value reference for given position.
-  u& F(u x,u y){return F(x+y*n_);}
+  u& F(u o,u k){r F(o+k*n);}
   // Returns the target value for given position.
-  u T(u x,u y){return T(x+y*n_);}
+  u T(u o,u k){r T(o+k*n);}
   // Returns the card id for given position.
-  u C(u x,u y){return C(x+y*n_);}
+  u C(u o,u k){r C(o+k*n);}
   // Returns the field value reference for given index.
-  u& F(u n){
-    assert(n<b_.size());
-    return b_[n];
+  u& F(u g){
+    assert(g<b.size());
+    r b[g];
   }
   // Returns the target value of given index.
-  u T(u n){return F(n)>>4;}
+  u T(u g){r F(g)>>4;}
   // Returns the card id of given index.
-  u C(u n){return F(n)&0xf;}
-  // Returns the string representation of the state.
-  s Str(){
-    ss s;
-    s<<"n: "<<n_<<"\ntargets: "<<t_<<"\nnext target: "<<nt_
-     <<"\ncard: "<<(fc_&0xf)<<"("<<(fc_>>4)<<")"
-     <<"\npos: "<<x_<<","<<y_<<"\ncost: "<<c_<<"\n";
-    for(i y=n_-1;y>=0;--y){
-      for(u x=0;x<n_;++x)s<<C(x,y)<<"("<<T(x,y)<<")\t";
-      s<<"\n";
-    }
-    return s.str();
-  }
+  u C(u g){r F(g)&0xf;}
   // Returns the solution string.
-  s AStr(){
+  s B(){
     ss s;
-    for(A& e:a_)s<<e.Str()<<"\n";
-    return s.str();
+    for(A& e:a)s<<e.B()<<"\n";
+    r s.str();
   }
   // Board dimension, free card, number of targets, next target id,
   // x and y positions, costs, heuristic costs.
-  u n_,fc_,t_,nt_,x_,y_,c_,h_;
+  u n,fc,t,nt,x,y,c,h;
   // The board fields.
-  vu b_;
+  vu b;
   // The recorded actions.
-  vA a_;
+  vA a;
 };
 // Returns all rotated card ids for given card id.
 vu Rot(u id){
   u t=id&0xfffffff0;
   u c=id&0xf;
-  if(c<2)return{t,t|1u};
-  else if(c<6)return{t|2u,t|3u,t|4u,t|5u};
-  else if(c==6)return{id};
-  return{t|7u,t|8u,t|9u,t|10u};
+  if(c<2)r{t,t|1u};
+  else if(c<6)r{t|2u,t|3u,t|4u,t|5u};
+  else if(c==6)r{id};
+  r{t|7u,t|8u,t|9u,t|10u};
 }
 // Returns all states resulting in inserting at given row and column.
 vS In(S& st,u n){
-  vu fc=Rot(st.fc_);
+  vu fc=Rot(st.fc);
   vS v;
   v.reserve(4*fc.size());
   for(u c:fc){
-    v.push_back(st);
-    v.back().fc_=c;
+    v.pb(st);
+    v.back().fc=c;
     v.back().CU(n);
-    v.push_back(st);
-    v.back().fc_=c;
+    v.pb(st);
+    v.back().fc=c;
     v.back().CD(n);
-    v.push_back(st);
-    v.back().fc_=c;
+    v.pb(st);
+    v.back().fc=c;
     v.back().RR(n);
-    v.push_back(st);
-    v.back().fc_=c;
+    v.pb(st);
+    v.back().fc=c;
     v.back().RL(n);
   }
   assert(v.size()==4*fc.size());
-  return v;
+  r v;
 }
 // Returns all states created by inserting the free card at any sane location.
 vS E1(S& st){
   vS v;
-  v.reserve(8*(st.n_-1));
-  for(u n=1;n<st.n_;n+=2)
+  v.reserve(8*(st.n-1));
+  for(u n=1;n<st.n;n+=2)
     for(S& st2:In(st,n))
-      v.push_back(st2);
-  assert(v.size()<=8*(st.n_-1));
-  return v;
+      v.pb(st2);
+  assert(v.size()<=8*(st.n-1));
+  r v;
 }
 // Returns the manhattan distance for the given positions.
-u MD(i x1,i y1,i x2,i y2){return abs(x1-x2)+abs(y1-y2);}
-u MD(uu p1,uu p2){return MD(p1.first,p1.second,p2.first,p2.second);}
+u MD(i x1,i y1,i x2,i y2){r abs(x1-x2)+abs(y1-y2);}
+u MD(uu p1,uu p2){r MD(p1.first,p1.second,p2.first,p2.second);}
 // Returns at most the given number of reachable positions for given state.
 // Results are pair(f-cost,pair(x,y)).
 vuuu E2(S& st,u n){
   uu p=st.NTP();
-  vuu s={{st.x_,st.y_}};
-  suuu r;
-  r.insert({MD({st.x_,st.y_},p),{st.x_,st.y_}});
-  while(s.size()){
+  vuu s={{st.x,st.y}};
+  suuu b;
+  b.insert({MD({st.x,st.y},p),{st.x,st.y}});
+  w(s.size()){
     u x=s.back().first;
     u y=s.back().second;
     s.pop_back();
     for(uu xy:st.Con(x,y)){
       u d=MD(p,xy);
-      if(!r.count({d,xy})){
-        r.insert({d,xy});
-        s.push_back(xy);
+      if(!b.count({d,xy})){
+        b.insert({d,xy});
+        s.pb(xy);
       }
     }
   }
-  r.erase({MD({st.x_,st.y_},p),{st.x_,st.y_}});
+  b.erase({MD({st.x,st.y},p),{st.x,st.y}});
   vuuu v;
   v.reserve(n);
-  for(auto& e:r){
-    v.push_back(e);
+  for(auto& e:b){
+    v.pb(e);
     if(v.size()==n)break;
   }
-  return v;
+  r v;
 }
 // Searches for a solution for given state/game by a hill-climbing/A* hybrid.
 // Returns the solution state, or the start state, if no solution was found.
 S Se(S& st){
-  if(st.T(st.x_,st.y_)==1)++st.nt_;
+  if(st.T(st.x,st.y)==1)++st.nt;
   qS q;
-  st.h_=MD({st.x_,st.y_},st.NTP());
+  st.h=MD({st.x,st.y},st.NTP());
   q.push(st);
-  while(q.size()){
+  w(q.size()){
     S t=q.top();
     q.pop();
-    if(t.Sol())return t;
+    if(t.O())r t;
     for(S& s:E1(t))
       for(uuu& p:E2(s,5)){
         S s2=s;
         s2.M(p.second.first,p.second.second);
-        s2.h_=p.first;
+        s2.h=p.first;
         q.push(s2);
       }
   }
-  return st;
+  r st;
 }
 #endif  // S_H

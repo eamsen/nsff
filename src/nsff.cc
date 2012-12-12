@@ -1,22 +1,16 @@
 #include"g.h"
-int main(){
-  vs in(1);
-  getline(ci,in[0]);
-  S st;
-  ss(in[0])>>st.n_;
-  u t=st.n_*st.n_+3;
-  in.resize(t+1);
-  while(t){
-    getline(ci,in[in.size()-t--]);
-  }
-  ss(in[1])>>st.t_;
-  ss(in[2])>>st.fc_;
-  ss(in[3])>>st.x_>>st.y_;
-  for_each(in.begin()+4,in.end(),[&st](s& e){
-    u c,t;
-    ss(e)>>c>>t;
-    st.b_.push_back(++t<<4|c);
-  });
-  S f=Se(st);
-  co<<f.AStr();
+i main(){
+  vs c(1);
+  gl(ci,c[0]);
+  S a;
+  ss(c[0])>>a.n;
+  u t=a.n*a.n+3;
+  c.resize(t+1);
+  w(t){gl(ci,c[c.size()-t--]);}
+  ss(c[1])>>a.t;
+  ss(c[2])>>a.fc;
+  ss(c[3])>>a.x>>a.y;
+  for_each(c.begin()+4,c.end(),[&a](s& e){
+    u c,t;ss(e)>>c>>t;a.b.pb(++t<<4|c);});
+  co<<Se(a).B();
 }

@@ -9,23 +9,28 @@
 #include <cassert>
 #include <queue>
 using namespace std;
-typedef int i;
-typedef uint32_t u;
-typedef string s;
-typedef vector<i> vi;
-typedef vector<u> vu;
-typedef vector<s> vs;
+#define ty typedef
+#define gl getline
+#define w(p) while(p)
+#define f(p) for(p)
+#define pb(p) push_back(p)
+#define r return
+ty int i;
+ty uint32_t u;
+ty string s;
+ty vector<u> vu;
+ty vector<s> vs;
 struct S;
-typedef vector<S> vS;
-typedef priority_queue<S> qS;
+ty vector<S> vS;
+ty priority_queue<S> qS;
 struct A;
-typedef vector<A> vA;
-typedef stringstream ss;
-typedef pair<u,u> uu;
-typedef pair<u,pair<u,u> > uuu;
-typedef vector<uu> vuu;
-typedef vector<uuu> vuuu;
-typedef set<uuu> suuu;
+ty vector<A> vA;
+ty stringstream ss;
+ty pair<u,u> uu;
+ty pair<u,pair<u,u> > uuu;
+ty vector<uu> vuu;
+ty vector<uuu> vuuu;
+ty set<uuu> suuu;
 ostream& co=cout;
 istream& ci=cin;
 #include "s.h"
