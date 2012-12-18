@@ -1,20 +1,24 @@
-#ifndef G_H
-#define G_H
+// #ifndef G_H
+// #define G_H
 #include <iostream>
 #include <string>
 #include <vector>
 #include <set>
 #include <sstream>
 #include <algorithm>
-#include <cassert>
+// #include <cassert>
 #include <queue>
 using namespace std;
 #define ty typedef
 #define gl getline
 #define w(p) while(p)
 #define f(p) for(p)
+#define b() back()
+#define po pop
 #define pb(p) push_back(p)
 #define r return
+#define fi first
+#define se second
 ty int i;
 ty uint32_t u;
 ty string s;
@@ -34,4 +38,4 @@ ty set<uuu> suuu;
 ostream& co=cout;
 istream& ci=cin;
 #include "s.h"
-#endif  // G_H
+// #endif  // G_H
