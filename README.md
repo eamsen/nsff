@@ -1,3 +1,11 @@
+
+                        ____    _   _______ ____________
+                        \ \ \  / | / / ___// ____/ ____/  
+                         \ \ \/  |/ /\__ \/ /_  / /_      
+                         / / / /|  /___/ / __/ / __/      
+                        /_/_/_/ |_//____/_/   /_/         
+                                                     
+
 # NSFF - Not So Fast Forward
 An evil hybrid A\*/hill-climbing planner used to solve Labyrinth (based
 on the board game) problems. It's fast, mostly optimal and is written in
